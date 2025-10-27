@@ -1,0 +1,59 @@
+services:
+  control-plane:
+    build:
+      context: ./control_plane
+      dockerfile: Dockerfile
+    container_name: minicloud-control
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./control_plane:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - db
+
+  agent:
+    build:
+      context: ./agent
+      dockerfile: Dockerfile
+    container_name: minicloud-agent-1
+    environment:
+      - NODE_ID=node-1
+      - CONTROL_PLANE_URL=http://control-plane:8000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - control-plane
+    restart: unless-stopped
+
+  # Dummy service just to satisfy depends_on (SQLite is file-based)
+  db:
+    image: alpine:3.19
+    command: ["sleep","infinity"]
+
+  minio:
+    image: minio/minio
+    container_name: minicloud-minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minicloud
+      MINIO_ROOT_PASSWORD: minicloud123
+    volumes:
+      - ./minio-data:/data
+
+  minio-init:
+    image: minio/mc
+    container_name: minicloud-minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      sh -c "
+      until mc alias set local http://minio:9000 minicloud minicloud123; do echo 'waiting for minio'; sleep 2; done;
+      until mc ls local >/dev/null 2>&1; do sleep 2; done;
+      mc mb --ignore-existing local/uploads;
+      exit 0
+      "

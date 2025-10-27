@@ -1,0 +1,73 @@
+# Minio Object Store Browser
+http://localhost:9001/browser/uploads
+
+# Mini Control Panel
+http://localhost:8000/docs
+
+#Health Check
+curl http://localhost:8000/health/
+
+# run server
+cd ~/Desktop/MiniCloud
+mkdir -p minio-data       
+docker compose down
+docker compose up -d minio minio-init
+docker compose logs -f minio-init 
+
+
+# run API + DB
+cd ~/Desktop/MiniCloud
+# bring up the API (and DB if it needs one)
+docker compose up -d db control-plane
+# or simply:
+# docker compose up -d
+# watch the app logs
+docker compose logs -f control-plane
+# mapping checker
+docker compose port control-plane 8000
+
+curl -v http://localhost:8000/your-endpoint \
+  -H 'Content-Type: application/json' \
+  -H 'X-Request-ID: test-123' \
+  -d '{"foo":"bar"}'
+
+  docker compose logs -f control-plane
+
+
+
+
+
+# Check if Docker is running
+docker info > /dev/null && echo "Docker is ready ✅" || echo "Still starting..."
+
+# Running MiniCloud
+cd ~/Desktop/MiniCloud
+docker compose up -d
+
+# Run Docker Control Panel
+docker compose up -d db control-plane
+
+# check all the ports working properly
+docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Ports}}"
+output:- 
+NAMES               IMAGE                     PORTS
+minicloud-agent-1   minicloud-agent           
+minicloud-control   minicloud-control-plane   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+minicloud-db-1      alpine:3.19               
+minicloud-minio     minio/minio               0.0.0.0:9000-9001->9000-9001/tcp, [::]:9000-9001->9000-9001/tcp
+
+#agent logs
+docker compose logs -f control-plane
+
+# Health checker
+curl http://localhost:8000/health/
+
+#tail control plane logs
+docker compose logs -f --tail=200 control-plane
+
+#minio api connection
+curl http://localhost:8000/files/ping
+
+# docker composer build
+docker compose build control-plane
+docker compose up -d control-plane
