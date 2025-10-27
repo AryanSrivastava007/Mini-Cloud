@@ -79,6 +79,12 @@ docker compose build
 ### Run the Stack
 docker compose up -d
 
+### Test File Upload
+echo "hello cloud" > hello.txt
+curl -F "file=@hello.txt" http://localhost:8000/files/upload/
+
+###List File
+curl http://localhost:8000/files/list/
 
 MiniCloud/
 ├── control_plane/
