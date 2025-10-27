@@ -5,7 +5,7 @@
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED.svg?logo=docker)](https://www.docker.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](#)
-[![Made with ❤️ by Aryan](https://img.shields.io/badge/Made%20with-%E2%9D%A4-red.svg)]([https://www.linkedin.com/in/aryan-srivastava-605b3a220/)])
+[![Made with ❤️ by Aryan](https://img.shields.io/badge/Made%20with-%E2%9D%A4-red.svg)]([https://www.linkedin.com/in/aryan-srivastava-605b3a220/])
 
 > A lightweight cloud platform that simulates **AWS EC2 + S3** functionality using **FastAPI**, **Docker**, and **MinIO**.  
 > Users can spin up containerized instances, upload/download files, and manage resources through REST APIs — all locally.
